@@ -3,6 +3,7 @@ from models.user import UserOrm
 from schemas.user import CreateUser, UpdateUser
 from sqlalchemy import select
 from fastapi import HTTPException, status
+from sqlalchemy.orm import selectinload, joinedload
 
 
 async def create_user_crud(user_in: CreateUser, session: AsyncSession):
@@ -14,8 +15,13 @@ async def create_user_crud(user_in: CreateUser, session: AsyncSession):
 
 
 async def get_user_by_id_crud(user_id: int, session: AsyncSession):
-    user = await session.get(UserOrm, user_id)
-    return user
+    stmt = (
+        select(UserOrm)
+        .where(UserOrm.id == user_id)
+        .options(selectinload(UserOrm.tasks))
+    )
+    result = await session.execute(stmt)
+    return result.scalars().first()
 
 
 async def get_list_users_crud(session: AsyncSession, start: int = 0, stop: int = 3):

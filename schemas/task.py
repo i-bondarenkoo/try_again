@@ -16,6 +16,13 @@ class ResponseTask(CreateTask):
     model_config = ConfigDict(from_attributes=True)
 
 
+class ShortResponseTask(BaseModel):
+    # id: int
+    title: str
+    description: str
+    status: str
+
+
 class PathUpdateTask(CreateTask):
     title: str | None = None
     description: str | None = None
