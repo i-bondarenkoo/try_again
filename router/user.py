@@ -2,7 +2,7 @@ from fastapi import APIRouter, Body, Query, Path, Depends, HTTPException, status
 import crud
 from db.database import get_session
 from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.user import CreateUser, ResponseUser
+from schemas.user import CreateUser, ResponseUser, UpdateUser
 from typing import Annotated
 
 
@@ -38,7 +38,7 @@ async def get_user_by_id(
 @router.get("/", response_model=list[ResponseUser])
 async def get_list_users(
     start: int = Query(0, ge=0, description="Начальный индекс списка пользователей"),
-    stop: int = Query(3, gt=3, description="Конечный индекс списка пользователей"),
+    stop: int = Query(3, gt=0, description="Конечный индекс списка пользователей"),
     session: AsyncSession = Depends(get_session),
 ):
     if start > stop:
@@ -47,3 +47,29 @@ async def get_list_users(
             detail="Начальный индекс списка не может быть больше конечного",
         )
     return await crud.get_list_users_crud(start=start, stop=stop, session=session)
+
+
+@router.patch("/{user_id}", response_model=ResponseUser)
+async def update_user(
+    user_id: Annotated[int, Path(description="ID пользователя для обновления")],
+    user: Annotated[UpdateUser, Body(description="Данные для обновления")],
+    session: AsyncSession = Depends(get_session),
+):
+    return await crud.update_user_crud(
+        user_id=user_id,
+        user=user,
+        session=session,
+    )
+
+
+@router.delete("/{user_id}")
+async def delete_user(
+    user_id: Annotated[int, Path(description="ID пользователя для удаления")],
+    session: AsyncSession = Depends(get_session),
+):
+    result = await crud.delete_user_crud(user_id, session)
+    if result is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Пользователь не найден"
+        )
+    return result

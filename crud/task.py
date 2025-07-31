@@ -30,6 +30,7 @@ async def update_task_crud(task_id: int, task: PathUpdateTask, session: AsyncSes
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Задача не найдена"
         )
+
     data: dict = task.model_dump(exclude_unset=True)
     if not data:
         raise HTTPException(

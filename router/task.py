@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.database import get_session
 import crud
 from typing import Annotated
+from crud.user import get_user_by_id_crud
 
 router = APIRouter(
     prefix="/tasks",
@@ -16,6 +17,11 @@ async def create_task(
     task_in: Annotated[CreateTask, Body(description="Поля для создания объекта в БД")],
     session: AsyncSession = Depends(get_session),
 ):
+    check_user = await get_user_by_id_crud(task_in.user_id, session)
+    if not check_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Пользователь не найден"
+        )
     return await crud.create_task_crud(task_in=task_in, session=session)
 
 
@@ -42,7 +48,10 @@ async def get_list_task(
     session: AsyncSession = Depends(get_session),
 ):
     if start > stop:
-        raise ValueError("Конечный индекс больше начального")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Начальный индекс списка не может быть больше конечного",
+        )
     return await crud.get_list_task_crud(start=start, stop=stop, session=session)
 
 
@@ -52,6 +61,12 @@ async def update_task(
     task: Annotated[PathUpdateTask, Body(description="Данные для обновления")],
     session: AsyncSession = Depends(get_session),
 ):
+    if task.user_id is not None:
+        check_user = await get_user_by_id_crud(task.user_id, session)
+        if not check_user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Пользователь не найден"
+            )
     return await crud.update_task_crud(task=task, task_id=task_id, session=session)
 
 

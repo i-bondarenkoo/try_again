@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict
 class CreateTask(BaseModel):
     title: str
     description: str
-    assignee: str
+    user_id: int
     status: str
 
 
@@ -19,5 +19,5 @@ class ResponseTask(CreateTask):
 class PathUpdateTask(CreateTask):
     title: str | None = None
     description: str | None = None
-    assignee: str | None = None
+    user_id: int | None = None
     status: str | None = None
