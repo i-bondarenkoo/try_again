@@ -1,1 +1,2 @@
-from schemas.task import CreateTask, ResponseTask
+from schemas.task import CreateTask, ResponseTask, PathUpdateTask
+from schemas.user import CreateUser, ResponseUser
