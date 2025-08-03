@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Body, Path, HTTPException, status, Query
-from schemas.task import CreateTask, ResponseTask, PathUpdateTask
+from schemas.task import CreateTask, ResponseTask, PathUpdateTask, ResponseTaskWithUser
 from sqlalchemy.ext.asyncio import AsyncSession
 from db.database import get_session
 import crud
@@ -25,7 +25,7 @@ async def create_task(
     return await crud.create_task_crud(task_in=task_in, session=session)
 
 
-@router.get("/{task_id}", response_model=ResponseTask)
+@router.get("/{task_id}", response_model=ResponseTaskWithUser)
 async def get_task_by_id(
     task_id: Annotated[
         int, Path(gt=0, description="ID задачи, для получения информации")
@@ -41,7 +41,7 @@ async def get_task_by_id(
     return task
 
 
-@router.get("/", response_model=list[ResponseTask])
+@router.get("/", response_model=list[ResponseTaskWithUser])
 async def get_list_task(
     start: int = Query(0, ge=0, description="Начальный индекс списка задач"),
     stop: int = Query(3, gt=0, description="Конечный индекс списка задач"),

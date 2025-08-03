@@ -1,5 +1,9 @@
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from schemas.user import ResponseUser
 
 
 class CreateTask(BaseModel):
@@ -21,6 +25,15 @@ class ShortResponseTask(BaseModel):
     title: str
     description: str
     status: str
+
+
+class ResponseTaskWithUser(BaseModel):
+    id: int
+    title: str
+    description: str
+    status: str
+    created_at: datetime
+    user: "ResponseUser"
 
 
 class PathUpdateTask(CreateTask):

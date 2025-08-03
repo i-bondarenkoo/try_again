@@ -1,4 +1,16 @@
-from schemas.task import CreateTask, ResponseTask, PathUpdateTask, ShortResponseTask
-from schemas.user import CreateUser, ResponseUser, UpdateUser
+from schemas.task import (
+    CreateTask,
+    ResponseTask,
+    PathUpdateTask,
+    ShortResponseTask,
+    ResponseTaskWithUser,
+)
+from schemas.user import (
+    CreateUser,
+    ResponseUser,
+    UpdateUser,
+    ResponseUserWithRelationship,
+)
 
-ResponseUser.model_rebuild()
+ResponseUserWithRelationship.model_rebuild()
+ResponseTaskWithUser.model_rebuild()

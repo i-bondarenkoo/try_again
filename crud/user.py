@@ -25,7 +25,13 @@ async def get_user_by_id_crud(user_id: int, session: AsyncSession):
 
 
 async def get_list_users_crud(session: AsyncSession, start: int = 0, stop: int = 3):
-    stmt = select(UserOrm).order_by(UserOrm.id).offset(start).limit(stop - start)
+    stmt = (
+        select(UserOrm)
+        .options(selectinload(UserOrm.tasks))
+        .order_by(UserOrm.id)
+        .offset(start)
+        .limit(stop - start)
+    )
     result = await session.execute(stmt)
     return result.scalars().all()
 

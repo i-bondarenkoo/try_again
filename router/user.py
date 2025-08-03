@@ -2,7 +2,12 @@ from fastapi import APIRouter, Body, Query, Path, Depends, HTTPException, status
 import crud
 from db.database import get_session
 from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.user import CreateUser, ResponseUser, UpdateUser
+from schemas.user import (
+    CreateUser,
+    ResponseUser,
+    UpdateUser,
+    ResponseUserWithRelationship,
+)
 from typing import Annotated
 
 
@@ -20,7 +25,7 @@ async def create_user(
     return await crud.create_user_crud(user_in=user_in, session=session)
 
 
-@router.get("/{user_id}", response_model=ResponseUser)
+@router.get("/{user_id}", response_model=ResponseUserWithRelationship)
 async def get_user_by_id(
     user_id: Annotated[
         int, Path(gt=0, description="ID пользователя для просмотра данных")
@@ -35,7 +40,7 @@ async def get_user_by_id(
     return result
 
 
-@router.get("/", response_model=list[ResponseUser])
+@router.get("/", response_model=list[ResponseUserWithRelationship])
 async def get_list_users(
     start: int = Query(0, ge=0, description="Начальный индекс списка пользователей"),
     stop: int = Query(3, gt=0, description="Конечный индекс списка пользователей"),

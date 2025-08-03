@@ -11,9 +11,14 @@ class CreateUser(BaseModel):
     email: EmailStr
 
 
-class ResponseUser(CreateUser):
+class ResponseUserWithRelationship(CreateUser):
     id: int
     tasks: list["ShortResponseTask"]
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ResponseUser(CreateUser):
+    id: int
     model_config = ConfigDict(from_attributes=True)
 
 

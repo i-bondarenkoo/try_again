@@ -3,6 +3,7 @@ from schemas.task import CreateTask, PathUpdateTask
 from models.task import TaskOrm
 from sqlalchemy import select
 from fastapi import HTTPException, status
+from sqlalchemy.orm import selectinload
 
 
 async def create_task_crud(task_in: CreateTask, session: AsyncSession):
@@ -15,11 +16,28 @@ async def create_task_crud(task_in: CreateTask, session: AsyncSession):
 
 async def get_task_by_id_crud(task_id: int, session: AsyncSession):
     task = await session.get(TaskOrm, task_id)
-    return task
+    if not task:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Задача не найдена"
+        )
+    stmt = (
+        select(TaskOrm)
+        .where(TaskOrm.id == task_id)
+        .options(selectinload(TaskOrm.user))
+        .order_by(TaskOrm.id)
+    )
+    result = await session.execute(stmt)
+    return result.scalars().first()
 
 
 async def get_list_task_crud(session: AsyncSession, start: int = 0, stop: int = 3):
-    stmt = select(TaskOrm).order_by(TaskOrm.id).offset(start).limit(stop - start)
+    stmt = (
+        select(TaskOrm)
+        .options(selectinload(TaskOrm.user))
+        .order_by(TaskOrm.id)
+        .offset(start)
+        .limit(stop - start)
+    )
     result = await session.execute(stmt)
     return result.scalars().all()
 
