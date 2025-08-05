@@ -10,6 +10,9 @@ from schemas.user import (
     ResponseUser,
     UpdateUser,
     ResponseUserWithRelationship,
+    ResponseShortUser,
+    LoginUser,
+    RegisterUser,
 )
 
 ResponseUserWithRelationship.model_rebuild()

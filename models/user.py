@@ -14,8 +14,8 @@ class UserOrm(Base):
     firstname: Mapped[str] = mapped_column(String(50), nullable=False)
     lastname: Mapped[str] = mapped_column(String(50), nullable=False)
     email: Mapped[str] = mapped_column(String(30), nullable=False, unique=True)
-
-    # связь 1-n
+    hashed_password: Mapped[str] = mapped_column(String(100), nullable=True)
+    # # связь 1-n
     tasks: Mapped[list["TaskOrm"]] = relationship(
         "TaskOrm", back_populates="user", cascade="all, delete-orphan"
     )

@@ -3,7 +3,7 @@ from pydantic import BaseModel, ConfigDict
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from schemas.user import ResponseUser
+    from schemas.user import ResponseShortUser
 
 
 class CreateTask(BaseModel):
@@ -33,7 +33,7 @@ class ResponseTaskWithUser(BaseModel):
     description: str
     status: str
     created_at: datetime
-    user: "ResponseUser"
+    user: "ResponseShortUser"
 
 
 class PathUpdateTask(CreateTask):
