@@ -17,12 +17,12 @@ router = APIRouter(
 )
 
 
-@router.post("/", response_model=ResponseUser)
-async def create_user(
-    user_in: Annotated[CreateUser, Body(description="Данные пользователя")],
-    session: AsyncSession = Depends(get_session),
-):
-    return await crud.create_user_crud(user_in=user_in, session=session)
+# @router.post("/", response_model=ResponseUser)
+# async def create_user(
+#     user_in: Annotated[CreateUser, Body(description="Данные пользователя")],
+#     session: AsyncSession = Depends(get_session),
+# ):
+#     return await crud.create_user_crud(user_in=user_in, session=session)
 
 
 @router.get("/{user_id}", response_model=ResponseUserWithRelationship)

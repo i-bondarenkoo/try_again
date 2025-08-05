@@ -6,12 +6,12 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import selectinload, joinedload
 
 
-async def create_user_crud(user_in: CreateUser, session: AsyncSession):
-    new_user = UserOrm(**user_in.model_dump())
-    session.add(new_user)
-    await session.commit()
-    await session.refresh(new_user)
-    return new_user
+# async def create_user_crud(user_in: CreateUser, session: AsyncSession):
+#     new_user = UserOrm(**user_in.model_dump())
+#     session.add(new_user)
+#     await session.commit()
+#     await session.refresh(new_user)
+#     return new_user
 
 
 async def get_user_by_id_crud(user_id: int, session: AsyncSession):
