@@ -14,6 +14,7 @@ from schemas.user import (
     LoginUser,
     RegisterUser,
 )
+from schemas.token import TokenResponse
 
 ResponseUserWithRelationship.model_rebuild()
 ResponseTaskWithUser.model_rebuild()

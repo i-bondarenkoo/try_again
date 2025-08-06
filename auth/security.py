@@ -10,6 +10,6 @@ def hash_password(password: str):
 
 def verify_password(password: str, hashed_pwd: bytes):
     return bcrypt.checkpw(
-        current_password=password.encode(),
-        hashed_password=hashed_pwd.encode(),
+        password.encode(),
+        hashed_pwd.encode(),
     )
