@@ -44,11 +44,6 @@ async def get_list_task_crud(session: AsyncSession, start: int = 0, stop: int = 
 
 async def update_task_crud(task_id: int, task: PathUpdateTask, session: AsyncSession):
     update_task = await session.get(TaskOrm, task_id)
-    if not update_task:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Задача не найдена"
-        )
-
     data: dict = task.model_dump(exclude_unset=True)
     if not data:
         raise HTTPException(

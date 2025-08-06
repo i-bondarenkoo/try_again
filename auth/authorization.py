@@ -1,14 +1,12 @@
 from ast import stmt
 from typing import Annotated
-from fastapi import Depends, APIRouter
+from fastapi import Depends, APIRouter, Body
 from fastapi.security import OAuth2PasswordBearer
 from schemas.user import LoginUser, RegisterUser, ResponseUser
-from models.user import UserOrm
+from auth.dependencies import register_helper
 from sqlalchemy.ext.asyncio import AsyncSession
 from db.database import get_session
-from sqlalchemy import select
-from fastapi import HTTPException, status
-from auth.security import verify_password, hash_password
+
 
 router = APIRouter(
     prefix="/auth",
@@ -19,36 +17,10 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
 @router.post("/register", response_model=ResponseUser)
-async def register(data: RegisterUser, session: AsyncSession = Depends(get_session)):
-    stmt = select(UserOrm).where(UserOrm.email == data.email)
-    result = await session.execute(stmt)
-    user = result.scalars().first()
-    if user is not None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Пользователь уже зарегистрирован в системе",
-        )
-    hashed = hash_password(password=data.password)
-    user_db = UserOrm(
-        firstname=data.firstname,
-        lastname=data.lastname,
-        email=data.email,
-        hashed_password=hash_password(data.password),
-    )
-    session.add(user_db)
-    await session.commit()
-    await session.refresh(user_db)
-    return user_db
-
-
-# регистрация
-# @router.post("/login")
-# async def login(data: LoginUser, session: AsyncSession = Depends(get_session)):
-#     stmt = select(UserOrm).where(UserOrm.email == data.login)
-#     result = await session.execute(stmt)
-#     user = result.scalars().first()
-#     if user is None:
-#         raise HTTPException(
-#             status_code=status.HTTP_404_NOT_FOUND, detail="Не верный логин или пароль"
-#         )
-#     hash_password = hash_password(current_password=data.password)
+async def register(
+    data: Annotated[
+        RegisterUser, Body(description="Данные пользователя для регистрации")
+    ],
+    session: AsyncSession = Depends(get_session),
+):
+    return await register_helper(data=data, session=session)

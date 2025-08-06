@@ -1,17 +1,23 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from models.user import UserOrm
-from schemas.user import CreateUser, UpdateUser
+from schemas.user import CreateUser, UpdateUser, RegisterUser
 from sqlalchemy import select
 from fastapi import HTTPException, status
-from sqlalchemy.orm import selectinload, joinedload
+from sqlalchemy.orm import selectinload
+from auth.security import hash_password
 
 
-# async def create_user_crud(user_in: CreateUser, session: AsyncSession):
-#     new_user = UserOrm(**user_in.model_dump())
-#     session.add(new_user)
-#     await session.commit()
-#     await session.refresh(new_user)
-#     return new_user
+async def create_user_crud(data: RegisterUser, session: AsyncSession):
+    new_user = UserOrm(
+        firstname=data.firstname,
+        lastname=data.lastname,
+        email=data.email,
+        hashed_password=hash_password(data.password),
+    )
+    session.add(new_user)
+    await session.commit()
+    await session.refresh(new_user)
+    return new_user
 
 
 async def get_user_by_id_crud(user_id: int, session: AsyncSession):
@@ -20,6 +26,12 @@ async def get_user_by_id_crud(user_id: int, session: AsyncSession):
         .where(UserOrm.id == user_id)
         .options(selectinload(UserOrm.tasks))
     )
+    result = await session.execute(stmt)
+    return result.scalars().first()
+
+
+async def get_user_by_email(email: str, session: AsyncSession):
+    stmt = select(UserOrm).where(UserOrm.email == email)
     result = await session.execute(stmt)
     return result.scalars().first()
 

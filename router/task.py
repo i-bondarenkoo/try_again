@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, Body, Path, HTTPException, status, Query
+from models.task import TaskOrm
 from schemas.task import CreateTask, ResponseTask, PathUpdateTask, ResponseTaskWithUser
 from sqlalchemy.ext.asyncio import AsyncSession
 from db.database import get_session
@@ -61,6 +62,11 @@ async def update_task(
     task: Annotated[PathUpdateTask, Body(description="Данные для обновления")],
     session: AsyncSession = Depends(get_session),
 ):
+    check_task = await session.get(TaskOrm, task_id)
+    if not task:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Задача не найдена"
+        )
     if task.user_id is not None:
         check_user = await get_user_by_id_crud(task.user_id, session)
         if not check_user:
