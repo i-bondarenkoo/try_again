@@ -69,11 +69,12 @@ async def get_current_user(
     return user
 
 
-@router.get("/me")
+@router.get("/me", response_model=ResponseUser)
 async def read_users(current_user: Annotated[ResponseUser, Depends(get_current_user)]):
-    return ResponseUser(
-        firstname=current_user.firstname,
-        lastname=current_user.lastname,
-        email=current_user.email,
-        id=current_user.id,
-    )
+    # return ResponseUser(
+    #     firstname=current_user.firstname,
+    #     lastname=current_user.lastname,
+    #     email=current_user.email,
+    #     id=current_user.id,
+    # )
+    return current_user
